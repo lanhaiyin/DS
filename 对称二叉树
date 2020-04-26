@@ -1,0 +1,41 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+void  IS_swap(TreeNode* root)
+{
+    if(root==NULL)
+    return;
+    swap(root->left,root->right);
+    IS_swap(root->left);
+    IS_swap(root->right);
+}
+ bool isSameTree(TreeNode* p, TreeNode* q) {
+        if(q==NULL&&p==NULL)
+        return true;
+        if((q==NULL&&p!=NULL)||(q!=NULL&&p==NULL))
+        return false;
+        if(q->val!=p->val)
+        return false;
+        return isSameTree(p->left,q->left)&&isSameTree(p->right,q->right);
+    }
+
+    bool isSymmetric(TreeNode* root) {
+        
+        //先将左子树的左子树和右子树交换，再判断两个子树的值是否一样
+     if(root==NULL)
+     return true;
+     TreeNode*_leftTree=root->left;
+     TreeNode*_rightTree=root->right;
+      IS_swap(_leftTree);
+      return isSameTree(_leftTree,_rightTree);
+
+    }
+};
