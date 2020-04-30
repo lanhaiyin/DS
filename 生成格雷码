@@ -1,0 +1,22 @@
+class GrayCode {
+public:
+ 
+    vector<string> getGray(int n) {
+          vector<string> str;
+        // write code here
+        int m=(int)pow(2,n)-1;
+     for(int i=0;i<=m;i++)
+     {
+         //n位二进制存入数组中
+         string s="";int k=i;
+         for(int j=0;j<n;j++)
+         {
+      string zm=to_string(k%2);
+          s.insert(0,zm);
+             k/=2;
+         }
+         str.push_back(s);
+     }
+        return str;
+    }
+};
