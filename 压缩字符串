@@ -1,0 +1,26 @@
+class Solution {
+public:
+        int compress(vector<char>& chars) {
+                int i = 0;
+                while(i < chars.size() - 1){
+                        int j = i, cnt = 1;
+                        while(j < chars.size() - 1 && chars[j + 1] == chars[j]){
+                                j ++;
+                                cnt ++;
+                        }
+
+                        chars.erase(chars.begin() + i, chars.begin() + j);
+                        if(cnt > 1){
+                                string temp = to_string(cnt);
+                                for(int k = temp.size() - 1; k >= 0; -- k){
+                                        chars.insert(chars.begin() + i + 1, temp[k]);
+                                }
+                                i = i + temp.size() + 1;
+                        }
+                        else  i = i + 1;
+                                    
+                }
+                return chars.size();
+        }
+};
+
