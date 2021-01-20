@@ -1,0 +1,140 @@
+#include <iostream>
+#include <stack>
+using namespace std;
+template <typename T>
+struct btreenode
+{
+	T data;
+	btreenode<T> *Lchild,*Rchild;
+	btreenode(T _data=T(),btreenode *Lchild=NULL,btreenode* Rchild=NULL):data(_data)
+	{}
+};
+
+template <class T>
+
+ class Btree
+{
+public:
+	Btree():root(NULL)
+	{}
+	
+	void CreateTree(btreenode<T> * &root)//使用前序的方式构建二叉树
+	{
+		 //以#结束
+	T _data;
+	 if(cin>>_data)
+	 {
+	 //ABD##E##C##
+	 //创建一个结点
+	
+	 if(_data!='#')
+	 {
+		 root =new btreenode<T>(_data);
+		 CreateTree(root->Lchild);
+	     CreateTree(root->Rchild);
+	 }
+	 else
+		 root=NULL;
+	 }
+	}
+	//非递归的先序遍历
+	void PreOrder_feidigui(btreenode<T> * root)
+	{
+		stack<btreenode<T>*> s;
+		while(!s.empty()||root)
+		{
+               while(root)
+	           {
+			   s.push(root);
+			   cout<<root->data;
+			   root=root->Lchild;
+			   }
+			   btreenode<T>* top=s.top();
+			   s.pop();
+			   root=top->Rchild;
+		}
+
+	}
+	//中序遍历
+	void InOrder_feidigui(btreenode<T> * root)
+	{
+		//左根右
+		stack<btreenode<T>*> s;
+		while(!s.empty()||root)
+		{
+               while(root)
+	           {
+			   s.push(root);			   
+			   root=root->Lchild;
+			   }
+			   btreenode<T>* top=s.top();
+			   cout<<top->data;
+			   s.pop();
+			   root=top->Rchild;
+		}
+	}
+	//后序遍历
+	void PostOrder_feidigui(btreenode<T> * root)
+	{
+		//左右根
+		stack<btreenode<T>*> s;
+		 btreenode<T>* top=NULL;
+		while(!s.empty()||root)
+		{
+			//左边入栈
+               while(root)
+	           {
+			   s.push(root);			   
+			   root=root->Lchild;
+			   }
+			   //右边入栈
+			   
+			  
+			   root=s.top();
+			   
+			 if(root->Rchild==NULL||root->Rchild==top)
+			   {
+				   top=s.top();
+				   cout<<top->data;
+				   s.pop();
+				   root=NULL;
+			   }else if(root->Rchild)
+			   {
+				   root=root->Rchild;
+				   //s.push(root);
+			   }
+		}
+	}
+	
+	void printTree(btreenode<T> *root)
+	{
+		if(root==NULL)
+			return;
+		cout<<root->data;
+		printTree(root->Lchild);
+		printTree(root->Rchild);
+
+	}
+	btreenode<T>* get()const
+	{
+		return root;
+	}
+	
+private:
+	btreenode<T> *root;
+
+};
+
+  
+int main()
+{
+	Btree<char> tree;
+ btreenode<char> *node=tree.get();
+	tree.CreateTree(node);
+	//tree.PreOrder_feidigui(node);
+
+	cout<<endl;
+	//tree.InOrder_feidigui(node);
+	tree.PostOrder_feidigui(node);
+	 return 0;
+}
