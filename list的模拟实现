@@ -1,0 +1,241 @@
+#include <iostream>
+#include <assert.h>
+#include <algorithm>
+namespace lhy
+{
+//封装一个结构体，里面有前指针，后指针，和值
+template<class T>
+struct __list_node
+{
+	T data;
+	__list_node<T> *prev;
+	__list_node<T> *next;
+	__list_node (const T& data_=T())
+		:data(data_)
+		,prev(nullptr)
+		,next(nullptr)
+	{}
+};
+//封装一个迭代器
+template<class T,class ref,class ptr>
+struct __iterator_it
+{
+	typedef __list_node<T> Node;
+	typedef __iterator_it<T,ref,ptr> self;
+	Node *_node;
+	self(Node *node)
+	{
+		_node=node;
+	}
+	//*it和it->会改变对象的值，如果只读，需用const返回
+	//*it
+	ref operator*()
+	{
+		return _node->data;
+	}
+	ptr operator->()
+	{
+		return &_node->data;
+	}
+	//++it;
+		self& operator ++()
+	{
+		_node=_node->next;
+		return *this;
+	}
+	//	-i
+		self& operator -(T x)
+	{
+		while(x--)
+			_node=_node->prev;
+		return *this;
+	}
+	//it!=end();
+		bool operator!=(const self &it)
+		{
+			return _node!=it._node;
+		}
+		
+};
+template<class T>
+class List
+{
+public:
+	typedef  __list_node<T> Node;
+	typedef __iterator_it<T,T&,T*> iterator;
+	typedef __iterator_it<T,const T&,const T*> const_iterator;
+	iterator begin()
+	{
+		return iterator(head->next);
+	}
+	iterator end()
+	{
+		return iterator(head);
+	}
+	 const_iterator begin()const
+	{
+		return  const_iterator(head->next);
+	}
+	 const_iterator end()const
+	{
+		return const_iterator(head);
+	}
+	List()
+	{
+		 head=new Node;
+		head->data;
+		head->next=head;
+		head->prev=head;
+	}
+	~List()
+	{
+		//删掉所有节点
+		clear();
+		delete head;
+		head=nullptr;
+	}
+	//拷贝构造
+	List<T>  (List<T> &lt)
+	{
+		head=new Node;
+		head->next=head;
+		head->prev=head;
+		//将结点拷贝过来，深拷贝
+		iterator it=lt.begin();
+		while(it!=lt.end())
+		{
+			push_back(*it);
+			++it;
+		}
+		
+	}
+	//赋值两种方法
+	List<T> &operator=(List<T> lt)
+	{
+		//销毁旧的空间
+		clear();
+		//拷贝数据
+		for(auto e: lt)
+		{
+			push_back(e);
+		}
+		return *this;
+	}
+	
+/*	List<T> &operator =(List<T> lt)
+	{
+		swap(lt.head,head);
+		return *this;
+	}
+	
+	void swap(Node*& a,Node *&b)
+	{
+		Node *temp;
+		temp=a;
+		a=b;
+		b=temp;
+	}
+	*/
+	//插入
+	void insert(iterator pos,const T& x=T())
+	{
+		Node* _cur=new Node(x);
+		Node* _next=pos._node;
+		Node*_prev=_next->prev;
+		_prev->next=_cur;
+		_cur->prev=_prev;
+		_cur->next=_next;
+		_next->prev=_cur;
+	}
+	void clear()
+	{
+		//将除过头节点的全部删除掉
+		Node* cur=head->next;
+		Node*temp;
+		while(cur->next!=head)
+		{
+			temp=cur;
+			cur=cur->next;
+
+			delete temp;
+		}
+		head->next=head;
+		head->prev=head;
+
+	}
+	//删除
+	void erase(iterator pos)
+	{
+		assert(pos!=head);
+		Node* _cur=pos._node;
+		Node* _prev=_cur->prev;
+		Node* _next=_cur->next;
+		delete _cur;
+		_prev->next=_next;
+		_next->prev=_prev;
+
+	}
+	void push_back(const T& x=T())
+	{
+		//相当于给头节点前插入
+		insert(head,x);
+		
+	}
+	void pop_back()
+	{
+		//相当于删掉头节点的前一个结点
+		erase(head->prev);
+	}
+	void push_front(const T& x=T())
+	{
+		//相当于给头节点的下一个结点前插入
+		insert(head->next,x);
+	}
+private:
+	Node* head;
+
+	
+};
+
+void print( const List<int> &list)
+{
+	 List<int>::const_iterator it=list.begin();
+			//*it=1;
+		while(it!=list.end())
+		{
+			//*it=1;
+			std::cout<<*it;
+			++it;
+		}
+		std::cout<<std::endl;
+}
+void test()
+{
+		List <int> list;
+		list.push_back(1);
+		list.push_back(2);
+		list.push_back(3);
+		list.push_back(4);
+		list.insert(list.begin(),5);
+		//list.erase(list.end()-1);
+		list.pop_back();
+		list.push_front(6);
+		print(list);
+		//List<int> list_kaobei(list);
+		
+		//print(list_kaobei);
+		List<int> list_fuzhi;
+		list_fuzhi.push_back(2);
+		list_fuzhi=list;
+		print(list_fuzhi);
+		int a=3;
+		const int b=3;
+		
+}
+}
+/*遇到的问题，const迭代器，以及const参数的函数重载
+fun(const int *a)和fun(int *a)可以形成重载
+fun(const int a)和fun(int a)不构成重载，因为形参的改变并不影响实参
+
+拷贝构造以及赋值时，有些分不清对象
+*/
