@@ -1,0 +1,118 @@
+//优先级队列
+//出数据是按照顺序进行出队列，底层是用堆实现的
+
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+namespace lhy
+{
+	template <class T>
+
+struct less
+{
+	bool operator ()(const T &x1,const T&x2)
+	{
+		return x1<x2;
+	}
+};
+template <class T>
+struct greater
+{
+	bool operator ()(const T &x1,const T&x2)
+	{
+		return x1>x2;
+	}
+};
+
+	//默认是大堆
+	template<class T,class Container=vector<int>,class Compare=less<T> >
+	class Priority_queue
+	{
+
+	public:
+		//向上调整
+		void AdjustUp(vector<int> &arr,int n)
+		{
+			Compare com;
+			int child=n-1;
+			int parent=(child-1)/2;
+			while(child>0)
+			{
+				if(com(arr[parent],arr[child]))
+				{
+					swap(arr[parent],arr[child]);
+				}
+				else
+					break;
+				child=parent;
+				parent=(parent-1)/2;
+				
+			}
+
+		}
+		//向下调整
+		void AdjustDown(vector<int> &arr,int n)
+		{
+			//将两个子节点进行比较，最大的如果比根节点大则进行交换
+			int parent=0;
+			int child=parent*2+1;
+			Compare com;
+			while(child<n)
+			{
+				if((child+1)<n&&com(arr[child],arr[child+1]))
+				++child;
+				if(com(arr[parent],arr[child]))
+				{
+					swap(arr[child],arr[parent]);
+					parent=child;
+					child=child*2+1;
+					
+				}
+				else
+					break;
+			}
+		}
+		//swap()
+		//插入
+		void push(T x)
+		{
+			arr.push_back(x);
+			AdjustUp(arr,arr.size());
+			//堆的插入数据是在数组尾部插入数据，然后再将堆进行调整
+			//这里的调整是向上调整
+		}
+		//删除
+		void pop()
+		{
+			int n=arr.size();
+			swap(arr[0],arr[n-1]);
+			arr.pop_back();
+			AdjustDown(arr,n-1);
+		}
+		void print()
+		{
+			for(auto e:arr)
+			{
+				cout<<e<<" ";
+			}
+		}
+	
+	private:
+		Container arr;
+	};
+	
+void test()
+{
+	//vector<int> RR;
+
+	Priority_queue<int,std::vector<int>,lhy::less<int>> pq;
+	pq.push(8);
+	pq.push(3);
+	pq.push(9);
+	pq.push(1);
+	pq.pop();
+	pq.print();
+	
+}
+}
